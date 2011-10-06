@@ -1,8 +1,8 @@
 module.exports = AuditController = function() {
   Controller.call(this);
 
-  this.create = function() {
-    return {sampe: "output"};
+  this.start = function() {
+    this._socket.emit("current", { action: "getting initial document" });
   }
 }
 inherits(AuditController, Controller);
