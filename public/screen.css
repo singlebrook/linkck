@@ -1,0 +1,11 @@
+.ok {
+  color: green;
+  font-weight: 1000;
+}
+
+.notfound {
+  color: red;
+  font-weight: 1000;
+}
+
+.center { text-align: center };
