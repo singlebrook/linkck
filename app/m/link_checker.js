@@ -118,10 +118,10 @@ LinkChecker.prototype.run = function() {
     this._queue[abs_url].code = -1;
 
     // put it in the loop
-    process.nextTick(function() {
+    process.nextTick((function() {
       var bind_url = abs_url;
-      self.get_url(bind_url);
-    });
+      return function() { self.get_url(bind_url) };
+    })());
   }
 };
 
