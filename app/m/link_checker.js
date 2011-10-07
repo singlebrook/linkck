@@ -41,8 +41,11 @@ LinkChecker.prototype.get_url = function(abs_url) {
       jsdom.env(data, ['http://code.jquery.com/jquery-1.5.min.js'], function(err, window) {
         var links = window.$("a");
         for (var i = 0, l = links.length; i < l; i++) {
-          var link_href = links[i.toString()]._attributes._nodes.href._nodeValue;
-          self.add_url_to_queue(link_href, abs_url);
+          var link = links[i.toString()];
+          if (link._attributes && link._attributes._nodes && link._attributes._nodes.href) {
+            var link_href = link._attributes._nodes.href._nodeValue;
+            self.add_url_to_queue(link_href, abs_url);
+          }
         }
 
         self.decrement_and_rerun();
@@ -61,11 +64,16 @@ LinkChecker.prototype.get_url = function(abs_url) {
  * @api private
  */
 LinkChecker.prototype.add_url_to_queue = function(rel_url, referenced_by) {
-  if (rel_url.indexOf("mailto:") === 0) return;
+  // invalid for our purposes
+  if (rel_url.indexOf("mailto:") === 0 || rel_url.indexOf("javascript:") === 0 ||
+     rel_url.indexOf("#") === 0 || rel_url.indexOf("/#") === 0) return;
 
+  // href is an absolute url
   if (rel_url.indexOf("http://") === 0 || rel_url.indexOf("https://") === 0) {
     var follow = false;
     var abs_url = rel_url;
+
+  // rel_url is, in fact, relative
   } else {
     var follow = true;
 
@@ -79,6 +87,7 @@ LinkChecker.prototype.add_url_to_queue = function(rel_url, referenced_by) {
     }
   }
 
+  // increment reference count or add url to queue
   if (this._queue[abs_url]) {
     this._queue[abs_url].references++;
     // emit socket reference counter
